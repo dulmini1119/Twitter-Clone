@@ -17,6 +17,11 @@ export const signup = async (req,res) => {
         if(existingEmail){
             return res.status(400).json({error: 'email is already taken'});
         }
+
+        if(password.length<6){
+            return res.status(400).json({error: 'Password must be at least 6 characters'});
+        }
+
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password,salt);
 
