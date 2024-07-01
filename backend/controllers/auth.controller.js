@@ -4,16 +4,16 @@ import bcrypt from 'bcryptjs';
 export const signup = async (req,res) => {
     try{
         const {fullname,username,email,password} = req.body;
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^s@]+$/;
+        const emailRegex =  /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if(!emailRegex.test(email)){
             return res.status(400).json({error:"Invalid email address."});
         }
 
-        const existingUser = await UserActivation.findOne({username});
+        const existingUser = await User.findOne({username});
         if(existingUser){
             return res.status(400).json({error: 'username is already taken'});
         }
-        const existingEmail = await UserActivation.findOne({email});
+        const existingEmail = await User.findOne({email});
         if(existingEmail){
             return res.status(400).json({error: 'email is already taken'});
         }
@@ -29,8 +29,8 @@ export const signup = async (req,res) => {
             fullname,
             username,
             email,
-            password:hashedPassword
-        })
+            password: hashedPassword,
+        });
 
         if(newUser){
             generateTokenAndSetCookie(newUser,_id,res)
@@ -52,7 +52,8 @@ export const signup = async (req,res) => {
         }
         
     }catch(error){
-
+        console.log("Error is signup controller", error.message);
+        res.status(500).json({error: "Internal server error"});
     }
     
 }
