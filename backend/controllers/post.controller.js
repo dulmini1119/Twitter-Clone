@@ -100,7 +100,7 @@ export const likeUnlikePost = async (req,res) => {
 
         if(userLikedPost){
             await Post.updateOne({_id:postId}, {$pull: {likes:userId}})
-            res.status(200).json({message:"Post liked Successfully."})
+            res.status(200).json({message:"Post unliked Successfully."})
         }else{
             post.likes.push(userId);
             await post.save();
@@ -111,10 +111,34 @@ export const likeUnlikePost = async (req,res) => {
                 type: "like"
             })
             await notification.save();
+            res.status(200).json({message:"Post liked Successfully."})
         }  
 
     }catch(error){
         res.status(500).json({error: "Internal Server Error"});
         console.log("Error in likeUnlikePost controller",error);
+    }
+}
+
+export const gettAllPosts = async (req,res) => {
+    try{
+        const posts = await Post.find().sort({createdAt : -1})
+        .populate({
+            path: "user",
+            select: "-password",
+        })
+        .populate({
+            path: "comments.user",
+            select:"-password,-email",
+        });
+
+        if(posts.length === 0){
+            return res.status(404).json([]);
+        }
+        res.status(200).json(posts);
+
+    }catch(error){
+        res.status(500).json({error: "Internal Server Error"});
+        console.log("Error in gettAllPosts controller",error);
     }
 }
