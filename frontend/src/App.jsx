@@ -5,6 +5,7 @@ import HomePage from './pages/home/HomePage.jsx';
 import SignUpPage from './pages/auth/signup/SignUpPage.jsx';
 import LoginPage from './pages/auth/login/LoginPage.jsx';
 import Sidebar from "./components/common/Sidebar.jsx";
+import RightPanel from "./components/common/RightPanel.jsx";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
 				<Route path='/signup' element={<SignUpPage />} />
 				<Route path='/login' element={<LoginPage />} />
 			</Routes>
+      <RightPanel/>
     </div>
    
   )
