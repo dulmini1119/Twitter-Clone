@@ -42,5 +42,34 @@ To explore this project and run the Twitter clone locally, follow these steps:
      ```bash
      npm install
 
-   - Set up environment variables:
+   - Set up environment variables:<br/>
      Create a .env file in the backend directory and add the following:
+   ```
+      MONGO_URI=your_mongodburi(Add connection string into your application code)
+      PORT=5000
+      MONGODB_URI=your_mongodb_connection_string
+      CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+      CLOUDINARY_API_KEY=your_cloudinary_api_key
+      CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+
+4. Frontend Setup:
+   - Navigate to the frontend directory:
+     ```bash
+       cd ../frontend
+   - Install frontend dependencies:
+     ```bash
+       npm install
+
+5. Start the development servers:
+   - Start the backend server (from the backend directory):
+     ```bash
+     npm run dev
+   - Start the frontend development server (from the frontend directory):
+     ```bash
+     npm run dev
+
+6. Open your web browser and go to `http://localhost:3000` to view the Twitter clone.
+
+     
+
+
