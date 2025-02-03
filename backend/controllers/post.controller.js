@@ -17,8 +17,12 @@ export const createPost = async (req, res) => {
 		}
 
 		if (img) {
-			const uploadedResponse = await cloudinary.uploader.upload(img);
-			img = uploadedResponse.secure_url;
+			try {
+				const uploadedResponse = await cloudinary.uploader.upload(img);
+				img = uploadedResponse.secure_url;
+			} catch (error) {
+				return res.status(500).json({ error: "Failed to upload image" });
+			}
 		}
 
 		const newPost = new Post({
@@ -48,7 +52,11 @@ export const deletePost = async (req, res) => {
 
 		if (post.img) {
 			const imgId = post.img.split("/").pop().split(".")[0];
-			await cloudinary.uploader.destroy(imgId);
+	if (imgId) {
+		await cloudinary.uploader.destroy(imgId);
+	} else {
+		console.log("Invalid image ID");
+	}
 		}
 
 		await Post.findByIdAndDelete(req.params.id);
@@ -66,8 +74,8 @@ export const commentOnPost = async (req, res) => {
 		const postId = req.params.id;
 		const userId = req.user._id;
 
-		if (!text) {
-			return res.status(400).json({ error: "Text field is required" });
+		if (!text || !text.trim()) {
+			return res.status(400).json({ error: "Text field is required and cannot be empty" });
 		}
 		const post = await Post.findById(postId);
 
@@ -87,10 +95,58 @@ export const commentOnPost = async (req, res) => {
 	}
 };
 
+// export const likeUnlikePost = async (req, res) => {
+// 	try {
+// 		const userId = req.user._id;
+// 		const { id: postId } = req.params;
+
+// 		const post = await Post.findById(postId);
+
+// 		if (!post) {
+// 			return res.status(404).json({ error: "Post not found" });
+// 		}
+
+// 		const userLikedPost = post.likes.includes(userId);
+
+// 		if (userLikedPost) {
+// 			// Unlike post
+// 			await Post.updateOne({ _id: postId }, { $pull: { likes: userId } });
+// 			await User.updateOne({ _id: userId }, { $pull: { likedPosts: postId } });
+
+// 			const updatedLikes = post.likes.filter((id) => id.toString() !== userId.toString());
+// 			res.status(200).json(updatedLikes);
+// 		} else {
+// 			// Like post
+// 			post.likes.push(userId);
+// 			await User.updateOne({ _id: userId }, { $push: { likedPosts: postId } });
+// 			await post.save();
+
+// 			const notification = new Notification({
+// 				from: userId,
+// 				to: post.user,
+// 				type: "like",
+// 			});
+// 			await notification.save();
+
+// 			const updatedLikes = post.likes;
+// 			res.status(200).json(updatedLikes);
+// 		}
+// 	} catch (error) {
+// 		console.log("Error in likeUnlikePost controller: ", error);
+// 		res.status(500).json({ error: "Internal server error" });
+// 	}
+// };
+
+
 export const likeUnlikePost = async (req, res) => {
 	try {
 		const userId = req.user._id;
 		const { id: postId } = req.params;
+
+		// Ensure postId is a valid ObjectId
+		if (!mongoose.Types.ObjectId.isValid(userId)) {
+			return res.status(400).json({ error: "Invalid user ID" });
+		}
 
 		const post = await Post.findById(postId);
 
@@ -128,6 +184,7 @@ export const likeUnlikePost = async (req, res) => {
 		res.status(500).json({ error: "Internal server error" });
 	}
 };
+
 
 export const getAllPosts = async (req, res) => {
 	try {
