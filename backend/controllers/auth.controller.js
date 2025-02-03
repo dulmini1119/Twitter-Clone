@@ -16,7 +16,7 @@ export const signup = async (req,res) => {
         }
         const existingEmail = await User.findOne({email});
         if(existingEmail){
-            return res.status(400).json({error: 'email is already taken'});
+            return res.status(400).json({error: 'Email is already taken'});
         }
 
         if(password.length<6){
@@ -53,7 +53,7 @@ export const signup = async (req,res) => {
         }
         
     }catch(error){
-        console.log("Error is signup controller", error.message);
+        console.log("Error in signup controller", error.message);
         res.status(500).json({error: "Internal server error"});
     }
     
